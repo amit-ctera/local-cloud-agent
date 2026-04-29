@@ -2,7 +2,7 @@ const { app, BrowserWindow, Tray, Menu, ipcMain, nativeImage, shell } = require(
 const path = require('path');
 const { startServer, stopServer } = require('./server');
 const { startTunnel, stopTunnel } = require('./tunnel');
-const Store = require('electron-store').default;
+const Store = require('electron-store');
 
 const store = new Store({
   defaults: {
