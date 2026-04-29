@@ -4,6 +4,13 @@ const { startServer, stopServer } = require('./server');
 const { startTunnel, stopTunnel } = require('./tunnel');
 const Store = require('electron-store');
 
+// Prevent multiple instances — if another is already running, focus it instead
+const gotLock = app.requestSingleInstanceLock();
+if (!gotLock) {
+  app.quit();
+  return;
+}
+
 const store = new Store({
   defaults: {
     port: 31337,
@@ -18,6 +25,15 @@ let mainWindow = null;
 let tray = null;
 let serverInfo = { running: false, port: null };
 let tunnelUrl = null;
+let isShuttingDown = false;
+
+app.on('second-instance', () => {
+  if (mainWindow) {
+    if (mainWindow.isMinimized()) mainWindow.restore();
+    mainWindow.show();
+    mainWindow.focus();
+  }
+});
 
 function createWindow() {
   const { width, height } = store.get('windowBounds');
@@ -60,6 +76,11 @@ function createWindow() {
 }
 
 function createTray() {
+  if (tray) {
+    tray.destroy();
+    tray = null;
+  }
+
   const iconPath = path.join(__dirname, '..', 'assets', 'tray-icon.png');
   let trayIcon;
   try {
@@ -89,10 +110,7 @@ function createTray() {
     { type: 'separator' },
     {
       label: 'Quit',
-      click: () => {
-        app.isQuitting = true;
-        app.quit();
-      },
+      click: () => gracefulQuit(),
     },
   ]);
 
@@ -107,6 +125,19 @@ function sendToRenderer(channel, data) {
   }
 }
 
+async function gracefulQuit() {
+  if (isShuttingDown) return;
+  isShuttingDown = true;
+  try {
+    await stopTunnel();
+    await stopServer();
+  } catch {
+    // Best-effort cleanup
+  }
+  app.isQuitting = true;
+  app.quit();
+}
+
 async function boot() {
   const port = store.get('port');
   try {
@@ -119,9 +150,7 @@ async function boot() {
       try {
         tunnelUrl = await startTunnel(port, ngrokToken);
         sendToRenderer('tunnel-status', { connected: true, url: tunnelUrl });
-        if (tray) {
-          createTray();
-        }
+        createTray();
       } catch (err) {
         sendToRenderer('tunnel-status', { connected: false, error: err.message });
       }
@@ -225,8 +254,9 @@ app.on('activate', () => {
   else mainWindow.show();
 });
 
-app.on('before-quit', async () => {
-  app.isQuitting = true;
-  await stopTunnel();
-  await stopServer();
+app.on('before-quit', (e) => {
+  if (!isShuttingDown) {
+    e.preventDefault();
+    gracefulQuit();
+  }
 });
