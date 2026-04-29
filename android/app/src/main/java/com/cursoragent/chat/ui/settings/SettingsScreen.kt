@@ -77,13 +77,19 @@ fun SettingsScreen(
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    text = "Server: ${state.serverUrl}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
             }
+
+            Spacer(Modifier.height(12.dp))
+
+            OutlinedTextField(
+                value = state.serverUrl,
+                onValueChange = viewModel::onServerUrlChange,
+                label = { Text("Server URL") },
+                placeholder = { Text("https://abcd-1234.ngrok-free.app") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                supportingText = { Text("Update when ngrok URL changes after server restart") },
+            )
 
             Spacer(Modifier.height(24.dp))
             HorizontalDivider()

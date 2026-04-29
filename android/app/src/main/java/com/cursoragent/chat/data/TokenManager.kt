@@ -145,6 +145,12 @@ class TokenManager(private val context: Context) {
         return context.tokenStore.data.first()[KEY_SERVER_URL]
     }
 
+    suspend fun updateServerUrl(url: String) {
+        context.tokenStore.edit { prefs ->
+            prefs[KEY_SERVER_URL] = url
+        }
+    }
+
     suspend fun clearTokens() {
         context.tokenStore.edit { prefs ->
             prefs.remove(KEY_ACCESS_TOKEN)

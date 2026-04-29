@@ -69,6 +69,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     fun save() {
         viewModelScope.launch {
             val state = _uiState.value
+            tokenManager.updateServerUrl(state.serverUrl.trim())
             settingsRepository.setProjectPath(state.projectPath.trim())
             settingsRepository.setModel(state.model.trim())
             _uiState.update { it.copy(saved = true) }
