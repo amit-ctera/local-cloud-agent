@@ -4,15 +4,30 @@ const fs = require('fs');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 
-const DATA_DIR = path.join(__dirname, '..', 'data');
-const DB_PATH = path.join(DATA_DIR, 'agent.db');
-const ENC_KEY_PATH = path.join(DATA_DIR, 'encryption.key');
-const JWT_SECRET_PATH = path.join(DATA_DIR, 'jwt.secret');
+let DATA_DIR;
+let DB_PATH;
+let ENC_KEY_PATH;
+let JWT_SECRET_PATH;
+
+function resolveDataPaths() {
+  if (DATA_DIR) return;
+  // In packaged Electron, use userData; otherwise fall back to ./data relative to project root
+  try {
+    const { app } = require('electron');
+    DATA_DIR = path.join(app.getPath('userData'), 'data');
+  } catch {
+    DATA_DIR = path.join(__dirname, '..', 'data');
+  }
+  DB_PATH = path.join(DATA_DIR, 'agent.db');
+  ENC_KEY_PATH = path.join(DATA_DIR, 'encryption.key');
+  JWT_SECRET_PATH = path.join(DATA_DIR, 'jwt.secret');
+}
 
 let db = null;
 let encryptionKey = null;
 
 function ensureDataDir() {
+  resolveDataPaths();
   if (!fs.existsSync(DATA_DIR)) {
     fs.mkdirSync(DATA_DIR, { recursive: true });
   }
