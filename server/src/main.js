@@ -158,6 +158,29 @@ ipcMain.handle('complete-first-run', async () => {
   return { ok: true };
 });
 
+ipcMain.handle('stop-server', async () => {
+  try {
+    await stopTunnel();
+    await stopServer();
+    tunnelUrl = null;
+    serverInfo = { running: false, port: null };
+    sendToRenderer('server-status', { running: false });
+    sendToRenderer('tunnel-status', { connected: false });
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: err.message };
+  }
+});
+
+ipcMain.handle('start-server', async () => {
+  try {
+    await boot();
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: err.message };
+  }
+});
+
 ipcMain.handle('restart-server', async () => {
   try {
     await stopTunnel();

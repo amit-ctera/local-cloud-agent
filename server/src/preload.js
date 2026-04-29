@@ -4,6 +4,8 @@ contextBridge.exposeInMainWorld('api', {
   getState: () => ipcRenderer.invoke('get-state'),
   saveSettings: (settings) => ipcRenderer.invoke('save-settings', settings),
   completeFirstRun: () => ipcRenderer.invoke('complete-first-run'),
+  stopServer: () => ipcRenderer.invoke('stop-server'),
+  startServer: () => ipcRenderer.invoke('start-server'),
   restartServer: () => ipcRenderer.invoke('restart-server'),
   copyTunnelUrl: () => ipcRenderer.invoke('copy-tunnel-url'),
   openExternal: (url) => ipcRenderer.invoke('open-external', url),

@@ -53,9 +53,20 @@ export default function Dashboard({ state, onOpenSettings }) {
       <div className="header">
         <h1>Local Cloud Agent</h1>
         <div className="header-actions">
-          <button className="btn btn-secondary" onClick={() => window.api.restartServer()}>
-            ↻ Restart
-          </button>
+          {state.serverRunning ? (
+            <>
+              <button className="btn btn-danger" onClick={() => window.api.stopServer()}>
+                ■ Stop
+              </button>
+              <button className="btn btn-secondary" onClick={() => window.api.restartServer()}>
+                ↻ Restart
+              </button>
+            </>
+          ) : (
+            <button className="btn btn-primary" onClick={() => window.api.startServer()}>
+              ▶ Start
+            </button>
+          )}
           <button className="btn-icon" onClick={onOpenSettings} title="Settings">
             ⚙
           </button>
