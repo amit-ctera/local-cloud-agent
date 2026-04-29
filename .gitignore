@@ -1,0 +1,39 @@
+node_modules/
+dist/
+out/
+build/
+
+# Runtime data (encryption keys, DB, JWT secrets)
+server/data/
+
+# Electron builder output
+server/*.exe
+server/*.blockmap
+server/*.yml
+!server/electron-builder.yml
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# Android
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/captures/
+android/.externalNativeBuild/
+
+# Env
+.env
+.env.local

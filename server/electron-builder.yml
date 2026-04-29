@@ -1,0 +1,24 @@
+appId: com.localcloudagent.app
+productName: Local Cloud Agent
+directories:
+  output: dist
+files:
+  - src/**/*
+  - renderer/dist/**/*
+  - assets/**/*
+  - package.json
+  - node_modules/**/*
+asar: true
+win:
+  target: nsis
+  icon: assets/icon.ico
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Local Cloud Agent
+publish:
+  provider: github
+  owner: amit-ctera
+  repo: local-cloud-agent
